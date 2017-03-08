@@ -1,0 +1,6 @@
+FindIntent find {pasta|SearchTerms}
+FindIntent find {bacon eggs|SearchTerms}
+FindIntent find {bacon and eggs|SearchTerms}
+FindIntent I'd like to make {pasta|SearchTerms}
+FindIntent I'd like to make {bacon eggs|SearchTerms}
+FindIntent I'd like to make {bacon and eggs|SearchTerms}
