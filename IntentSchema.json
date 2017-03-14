@@ -9,15 +9,35 @@
         }
       ]
     },
-    { "intent": "AMAZON.StopIntent" },
-    { "intent": "AMAZON.CancelIntent" },
-    { "intent": "StartIngredIntent"},
-    { "intent": "PrevIngredIntent"},
-    { "intent": "NextIngredIntent"},
-    { "intent": "StartInstIntent"},
-    { "intent": "PrevInstIntent"},
-    { "intent": "NextInstIntent"},
-    { "intent": "HomeIntent"},
-    { "intent": "RestartIntent"}
+    {
+      "intent": "AMAZON.CancelIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "StartIngredIntent"
+    },
+    {
+      "intent": "PrevIngredIntent"
+    },
+    {
+      "intent": "NextIngredIntent"
+    },
+    {
+      "intent": "StartInstIntent"
+    },
+    {
+      "intent": "PrevInstIntent"
+    },
+    {
+      "intent": "NextInstIntent"
+    },
+    {
+      "intent": "HomeIntent"
+    },
+    {
+      "intent": "RestartIntent"
+    }
   ]
 }
