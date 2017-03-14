@@ -4,3 +4,19 @@ FindIntent find {bacon and eggs|SearchTerms}
 FindIntent I'd like to make {pasta|SearchTerms}
 FindIntent I'd like to make {bacon eggs|SearchTerms}
 FindIntent I'd like to make {bacon and eggs|SearchTerms}
+
+StartIngredIntent ingredients
+StartIngredIntent what are the ingredients
+PrevIngredIntent last ingredient
+NextIngredIntent next ingredient
+
+StartInstIntent read recipe
+StartInstIntent start
+PrevInstIntent last step
+NextInstIntent next step
+
+HomeIntent main menu
+HomeIntent exit
+HomeIntent quit
+
+RestartIntent start again
