@@ -74,6 +74,7 @@ def general_query_message(intent, session):
     )
     return build_response(build_speechlet_response(speech_output, card_title))
 
+
 def find_recipe(intent):
     recipes = json.loads(urllib2.urlopen("https://ffgh18ctp9.execute-api."
         "us-east-1.amazonaws.com/prod/RecipeUpdate?TableName=Recipes").read())
@@ -83,7 +84,8 @@ def find_recipe(intent):
             return begin_recipe(recipe)
 
     card_title = "Recipe not found"
-    speech_output = "Sorry, I couldn't find your recipe."
+    speech_output = ("Sorry, I couldn't find \"" + query
+        + "\" in your list of recipes.")
     return build_response(build_speechlet_response(speech_output, card_title))
 
 
@@ -93,6 +95,7 @@ def begin_recipe(recipe):
     session_attributes = {"recipe": recipe}
     return build_response(build_speechlet_response(speech_output, card_title),
         session_attributes)
+
 
 def start_ingred(intent, session):
     card_title = "First Ingredient"
@@ -107,6 +110,7 @@ def start_ingred(intent, session):
     session_attributes = {"recipe": recipe, "ingred_start": ingred_start, "ingred_end": ingred_end, "inIngred": 0}
     return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
 
+
 def start_inst(intent, session):
     card_title = "First Instruction"
     inst_start = 0
@@ -119,6 +123,7 @@ def start_inst(intent, session):
     speech_output = first_inst
     session_attributes = {"recipe": recipe, "inst_start": inst_start, "inst_end": inst_end, "inInst": 0}
     return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
+
 
 def get_next_ingred(intent, session):
     ingred_start = session["attributes"]["ingred_start"]
@@ -142,6 +147,7 @@ def get_next_ingred(intent, session):
     session_attributes = {"recipe": recipe, "ingred_start": ingred_start, "ingred_end": ingred_end, "inIngred": 0}
     return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
 
+
 def get_next_inst(intent, session):
     inst_start = session["attributes"]["inst_start"]
     inst_end = session["attributes"]["inst_end"]
@@ -164,6 +170,7 @@ def get_next_inst(intent, session):
     session_attributes = {"recipe": recipe, "inst_start": inst_start, "inst_end": inst_end, "inInst": 0}
     return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
 
+
 def get_prev_ingred(intent, session):
     card_title = "Prev Ingredient"
     ingred_start = session["attributes"]["ingred_start"]
@@ -180,6 +187,7 @@ def get_prev_ingred(intent, session):
     speech_output = prev_ingred
     session_attributes = {"recipe": recipe, "ingred_start": ingred_start, "ingred_end": ingred_end, "inIngred": 0}
     return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
+
 
 def get_prev_inst(intent, session):
     card_title = "Prev Instruction"
@@ -198,10 +206,12 @@ def get_prev_inst(intent, session):
     session_attributes = {"recipe": recipe, "inst_start": inst_start, "inst_end": inst_end, "inInst": 0}
     return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
 
+
 def go_to_home(launch_request, session):
     card_title = "Back to home"
     speech_output = "What recipe would you like to make?"
     return build_response(build_speechlet_response(speech_output, card_title))
+
 
 def handle_session_end_request():
     card_title = "Thank you!"
