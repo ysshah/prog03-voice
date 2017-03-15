@@ -21,37 +21,35 @@ def on_intent(intent_request, session):
     intent = intent_request["intent"]
     intent_name = intent_request["intent"]["name"]
 
-    #if "attributes" in session and session["attributes"].get("example", False):
-    #     pass
-    if intent_name == "GeneralQueryIntent":
+    if "attributes" in session and session["attributes"].get("inRecipe", False):
+        if intent_name == "HomeIntent":
+            return go_to_home(intent, session)
+        elif session["attributes"].get("readingIngredients", False):
+            if intent_name == "PrevIngredIntent":
+                session["attributes"]["ingredientIndex"] -= 1
+            elif intent_name == "NextIngredIntent":
+                session["attributes"]["ingredientIndex"] += 1
+            elif intent_name == "RestartIntent":
+                session["attributes"]["ingredientIndex"] = 0
+            return read_ingredient(intent, session)
+        elif session["attributes"].get("readingDirections", False):
+            if intent_name == "PrevInstIntent":
+                session["attributes"]["directionIndex"] -= 1
+            elif intent_name == "NextInstIntent":
+                session["attributes"]["directionIndex"] += 1
+            elif intent_name == "RestartIntent":
+                session["attributes"]["directionIndex"] = 0
+            return read_direction(intent, session)
+        elif intent_name == "StartIngredIntent":
+            return read_ingredient(intent, session)
+        elif intent_name == "StartInstIntent":
+            return read_direction(intent, session)
+
+    elif intent_name == "GeneralQueryIntent":
         return general_query_message(intent, session)
 
     elif intent_name == "FindIntent":
         return find_recipe(intent)
-
-    elif ("attributes" in session) and ("recipe" in session["attributes"]):
-        # we are in recipe and we will look for start ingredients list
-        # or start recipe and anything that is related to those two.
-        if intent_name == "HomeIntent":
-            return go_to_home(intent, session)
-        elif "inIngred" in session["attributes"]:
-            if intent_name == "PrevIngredIntent":
-                return get_prev_ingred(intent, session)
-            elif intent_name == "NextIngredIntent":
-                return get_next_ingred(intent, session)
-            elif intent_name == "RestartIntent":
-                return start_ingred(intent, session)
-        elif "inInst" in session["attributes"]:
-            if intent_name == "PrevInstIntent":
-                return get_prev_inst(intent, session)
-            elif intent_name == "NextInstIntent":
-                return get_next_inst(intent, session)
-            elif intent_name == "RestartIntent":
-                return start_inst(intent, session)
-        elif intent_name == "StartIngredIntent":
-            return start_ingred(intent, session)
-        elif intent_name == "StartInstIntent":
-            return start_inst(intent, session)
 
     elif intent_name == "HomeIntent":
         return go_to_home(intent, session)
@@ -84,127 +82,67 @@ def find_recipe(intent):
             return begin_recipe(recipe)
 
     card_title = "Recipe not found"
-    speech_output = ("Sorry, I couldn't find \"" + query
-        + "\" in your list of recipes.")
+    speech_output = ('Sorry, I could not find "' + query
+        + '" in your list of recipes.')
     return build_response(build_speechlet_response(speech_output, card_title))
 
 
 def begin_recipe(recipe):
     card_title = "Found recipe!"
     speech_output = "I found your recipe for {}.".format(recipe["RecipeName"])
-    session_attributes = {"recipe": recipe}
+    session_attributes = {
+        "inRecipe": True,
+        "name": recipe["RecipeName"],
+        "ingredients": recipe["Ingredients"].split("\n"),
+        "directions": recipe["Directions"].split("\n"),
+        "ingredientIndex": 0,
+        "directionIndex": 0
+    }
     return build_response(build_speechlet_response(speech_output, card_title),
         session_attributes)
 
 
-def start_ingred(intent, session):
-    card_title = "First Ingredient"
-    ingred_start = 0
-    ingred_end = 0
-    recipe = session["attributes"]["recipe"]
-    ingredients = recipe["Ingredients"]
-    while ingredients[ingred_end] != "\n":
-        ingred_end+= 1
-    first_ingred = ingredients[ingred_start: ingred_end] # ingred_end is the \n character
-    speech_output = "the first ingredient is " + first_ingred
-    session_attributes = {"recipe": recipe, "ingred_start": ingred_start, "ingred_end": ingred_end, "inIngred": 0}
-    return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
+def read_ingredient(intent, session):
+    session_attributes = session.get("attributes", {})
+    session_attributes["readingIngredients"] = True
+    session_attributes["readingDirections"] = False
+    session_attributes["directionIndex"] = 0
+    card_title = session_attributes["name"] + " Ingredients"
+    i = session_attributes["ingredientIndex"]
+    if i <= 0:
+        session_attributes["ingredientIndex"] = 0
+        speech_output = "The first ingredient is {}.".format(
+            session_attributes["ingredients"][0])
+    elif i >= len(session_attributes["ingredients"]) - 1:
+        session_attributes["ingredientIndex"] = len(
+            session_attributes["ingredients"]) - 1
+        speech_output = ('The last ingredient is {}. To start recipe '
+            'directions, please say "read recipe."'.format(
+            session_attributes["ingredients"][-1]))
+    else:
+        speech_output = session_attributes["ingredients"][i]
+    return build_response(build_speechlet_response(speech_output, card_title),
+        session_attributes)
 
 
-def start_inst(intent, session):
-    card_title = "First Instruction"
-    inst_start = 0
-    inst_end = 0
-    recipe = session["attributes"]["recipe"]
-    instructions = recipe["Directions"]
-    while instructions[inst_end] != "\n":
-        inst_end += 1
-    first_inst = instructions[inst_start: inst_end]
-    speech_output = first_inst
-    session_attributes = {"recipe": recipe, "inst_start": inst_start, "inst_end": inst_end, "inInst": 0}
-    return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
-
-
-def get_next_ingred(intent, session):
-    ingred_start = session["attributes"]["ingred_start"]
-    ingred_end = session["attributes"]["ingred_end"]
-    recipe = session["attributes"]["recipe"]
-    ingredients = recipe["Ingredients"]
-    ingred_end = ingred_end + 1
-    ingred_start = ingred_end # skip over \n character
-    while ((ingred_end + 1) != len(ingredients)) and (ingredients[ingred_end] != "\n"):
-        ingred_end += 1
-    next_ingred = ingredients[ingred_start: ingred_end]
-
-    if (ingred_end + 1) == len(ingredients):
-        card_title = "Final Ingredient"
-        speech_output = "the final ingredient is " + next_ingred
-        session_attributes = {"recipe": recipe}
-        return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
-
-    card_title = "Next Ingredient"
-    speech_output = next_ingred
-    session_attributes = {"recipe": recipe, "ingred_start": ingred_start, "ingred_end": ingred_end, "inIngred": 0}
-    return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
-
-
-def get_next_inst(intent, session):
-    inst_start = session["attributes"]["inst_start"]
-    inst_end = session["attributes"]["inst_end"]
-    recipe = session["attributes"]["recipe"]
-    instructions = recipe["Directions"]
-    inst_end = inst_end + 1
-    inst_start = inst_end
-    while ((inst_end + 1) != len(instructions)) and (instructions[inst_end] != "\n"):
-        inst_end += 1
-    next_inst = instructions[inst_start: inst_end]
-
-    if (inst_end + 1) == len(instructions):
-        card_title = "Last Instruction"
-        speech_output = "last, " + next_inst
-        session_attributes = {"recipe": recipe}
-        return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
-
-    card_title = "Next Instruction"
-    speech_output = next_inst
-    session_attributes = {"recipe": recipe, "inst_start": inst_start, "inst_end": inst_end, "inInst": 0}
-    return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
-
-
-def get_prev_ingred(intent, session):
-    card_title = "Prev Ingredient"
-    ingred_start = session["attributes"]["ingred_start"]
-    ingred_end = session["attributes"]["ingred_end"]
-    recipe = session["attributes"]["recipe"]
-    ingredients = recipe["Ingredients"]
-    ingred_end = ingred_start - 1
-    ingred_start = ingred_start - 2
-    while ingred_start != 0 and ingredients[ingred_start] != "\n":
-        ingred_start -= 1
-    if ingredients[ingred_start] == "\n":
-        ingred_start += 1
-    prev_ingred = ingredients[ingred_start: ingred_end]
-    speech_output = prev_ingred
-    session_attributes = {"recipe": recipe, "ingred_start": ingred_start, "ingred_end": ingred_end, "inIngred": 0}
-    return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
-
-
-def get_prev_inst(intent, session):
-    card_title = "Prev Instruction"
-    inst_start = session["attributes"]["inst_start"]
-    inst_end = session["attributes"]["inst_end"]
-    recipe = session["attributes"]["recipe"]
-    instructions = recipe["Directions"]
-    inst_end = inst_start - 1
-    inst_start -= 2
-    while inst_start != 0 and instructions[inst_start] != "\n":
-        inst_start -= 1
-    if instructions[inst_start] == "\n":
-        ingred_start += 1
-    prev_inst = instructions[inst_start: inst_end]
-    speech_output = prev_inst
-    session_attributes = {"recipe": recipe, "inst_start": inst_start, "inst_end": inst_end, "inInst": 0}
-    return build_response(build_speechlet_response(speech_output, card_title), session_attributes)
+def read_direction(intent, session):
+    session_attributes = session.get("attributes", {})
+    session_attributes["readingDirections"] = True
+    session_attributes["readingIngredients"] = False
+    session_attributes["ingredientIndex"] = 0
+    card_title = session_attributes["name"] + " Directions"
+    i = session_attributes["directionIndex"]
+    if i <= 0:
+        session_attributes["directionIndex"] = 0
+        speech_output = "First, " + session_attributes["directions"][0]
+    elif i >= len(session_attributes["directions"]) - 1:
+        session_attributes["directionIndex"] = len(
+            session_attributes["directions"]) - 1
+        speech_output = "Finally, " + session_attributes["directions"][-1]
+    else:
+        speech_output = "Next, " + session_attributes["directions"][i]
+    return build_response(build_speechlet_response(speech_output, card_title),
+        session_attributes)
 
 
 def go_to_home(launch_request, session):
