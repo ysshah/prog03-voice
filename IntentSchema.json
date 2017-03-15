@@ -9,32 +9,14 @@
         }
       ]
     },
-    {
-      "intent": "StartIngredIntent"
-    },
-    {
-      "intent": "PrevIngredIntent"
-    },
-    {
-      "intent": "NextIngredIntent"
-    },
-    {
-      "intent": "StartInstIntent"
-    },
-    {
-      "intent": "PrevInstIntent"
-    },
-    {
-      "intent": "NextInstIntent"
-    },
-    {
-      "intent": "HomeIntent"
-    },
-    {
-      "intent": "RestartIntent"
-    },
-    {
-      "intent": "GeneralQueryIntent"
-    }
+    { "intent": "StartIngredIntent" },
+    { "intent": "PrevIngredIntent" },
+    { "intent": "NextIngredIntent" },
+    { "intent": "StartInstIntent" },
+    { "intent": "PrevInstIntent" },
+    { "intent": "NextInstIntent" },
+    { "intent": "HomeIntent" },
+    { "intent": "RestartIntent" },
+    { "intent": "GeneralQueryIntent" }
   ]
 }

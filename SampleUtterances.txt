@@ -16,9 +16,15 @@ PrevIngredIntent last ingredient
 NextIngredIntent next ingredient
 
 StartInstIntent read recipe
+StartInstIntent read directions
+StartInstIntent read instructions
 StartInstIntent start
 PrevInstIntent last step
+PrevInstIntent last direction
+PrevInstIntent last instruction
 NextInstIntent next step
+NextInstIntent next direction
+NextInstIntent next instruction
 
 HomeIntent main menu
 HomeIntent exit ingredients
@@ -27,7 +33,7 @@ HomeIntent exit ingredients list
 HomeIntent quit ingredients
 HomeIntent quit ingredient list
 HomeIntent quit ingredients list
-HomeIntent cancel ingredients 
+HomeIntent cancel ingredients
 HomeIntent cancel ingredient list
 HomeIntent cancel ingredients list
 HomeIntent stop reading ingredients
@@ -61,4 +67,4 @@ RestartIntent can we start over
 RestartIntent start over
 
 GeneralQueryIntent what can i say
-GeneralQueryIntent waht can i do
+GeneralQueryIntent what can i do
