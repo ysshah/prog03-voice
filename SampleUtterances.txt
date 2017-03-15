@@ -6,6 +6,11 @@ FindIntent I'd like to make {bacon eggs|SearchTerms}
 FindIntent I'd like to make {bacon and eggs|SearchTerms}
 
 StartIngredIntent ingredients
+StartIngredIntent read ingredients
+StartIngredIntent read ingredients list
+StartIngredIntent read the ingredients list
+StartIngredIntent read the list of ingredients
+StartIngredIntent list the ingredients
 StartIngredIntent what are the ingredients
 PrevIngredIntent last ingredient
 NextIngredIntent next ingredient
@@ -16,7 +21,44 @@ PrevInstIntent last step
 NextInstIntent next step
 
 HomeIntent main menu
-HomeIntent exit
-HomeIntent quit
+HomeIntent exit ingredients
+HomeIntent exit ingredient list
+HomeIntent exit ingredients list
+HomeIntent quit ingredients
+HomeIntent quit ingredient list
+HomeIntent quit ingredients list
+HomeIntent cancel ingredients 
+HomeIntent cancel ingredient list
+HomeIntent cancel ingredients list
+HomeIntent stop reading ingredients
+HomeIntent stop the ingredients list
+HomeIntent stop the list
+HomeIntent stop reading
+HomeIntent exit directions
+HomeIntent exit recipe directions
+HomeIntent exit instructions
+HomeIntent exit recipe instructions
+HomeIntent quit directions
+HomeIntent quit recipe directions
+HomeIntent quit instructions
+HomeIntent quit recipe instructions
+HomeIntent cancel directions
+HomeIntent cancel recipe directions
+HomeIntent cancel instructions
+HomeIntent cancel recipe instructions
+HomeIntent stop directions
+HomeIntent stop recipe directions
+HomeIntent stop instructions
+HomeIntent stop recipe instructions
+HomeIntent stop reading recipe
 
 RestartIntent start again
+RestartIntent can we restart that
+RestartIntent can we start that again
+RestartIntent can we do the whole thing over
+RestartIntent can we start from the beginning
+RestartIntent can we start over
+RestartIntent start over
+
+GeneralQueryIntent what can i say
+GeneralQueryIntent waht can i do

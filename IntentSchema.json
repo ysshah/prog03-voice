@@ -10,12 +10,6 @@
       ]
     },
     {
-      "intent": "AMAZON.CancelIntent"
-    },
-    {
-      "intent": "AMAZON.StopIntent"
-    },
-    {
       "intent": "StartIngredIntent"
     },
     {
@@ -38,6 +32,9 @@
     },
     {
       "intent": "RestartIntent"
+    },
+    {
+      "intent": "GeneralQueryIntent"
     }
   ]
 }

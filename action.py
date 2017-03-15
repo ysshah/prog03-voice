@@ -23,7 +23,10 @@ def on_intent(intent_request, session):
 
     #if "attributes" in session and session["attributes"].get("example", False):
     #     pass
-    if intent_name == "FindIntent":
+    if intent_name == "GeneralQueryIntent":
+        return general_query_message(intent, session)
+    
+    elif intent_name == "FindIntent":
         return find_recipe(intent)
         
     elif ("attributes" in session) and ("recipe" in session["attributes"]):
@@ -49,15 +52,24 @@ def on_intent(intent_request, session):
             return start_ingred(intent, session)
         elif intent_name == "StartInstIntent":
             return start_inst(intent, session)
-        elif (intent_name == "AMAZON.CanelIntent") or (intent_name == "AMAZON.StopIntent"):
-            return go_to_home(intent, session)
     
-    elif (intent_name == "AMAZON.CancelIntent") or (intent_name == "AMAZON.StopIntent"):
-        return handle_session_end_request()
+    elif intent_name == "HomeIntent":
+        return go_to_home(intent, session)
     
     else:
         raise ValueError("Invalid intent")
 
+
+def general_query_message(intent, session):
+    card_title = "Answer General Query"
+    speech_output1 = "You are at the main menu. You can ask me to find any of the recipes that you have added on the website."
+    speech_output2 = "If I find the recipe, you can ask me to read the ingredient list or to read the recipe."
+    speech_output3 = "If asked, I will read off each item one by one."
+    speech_output4 = "After an item is stated, you can move on to the next item, or, go back to the previous item."
+    speech_output5 = "You can restart the list at any time."
+    speech_output6 = "You can exit the ingredients, recipe list, or recipe itself and will be taken back to the main menu."
+    speech_output = speech_output1 + " " + speech_output2 + " " + speech_output3 + " " + speech_output4 + " " + speech_output5 + " " + speech_output6
+    return build_response(build_speechlet_response(speech_output, card_title))
 
 def find_recipe(intent):
     recipes = json.loads(urllib2.urlopen("https://ffgh18ctp9.execute-api."
