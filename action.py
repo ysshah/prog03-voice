@@ -23,54 +23,85 @@ def on_intent(intent_request, session):
 
     if "attributes" in session and session["attributes"].get("inRecipe", False):
         if intent_name == "HomeIntent":
-            return go_to_home(intent, session)
+            return go_to_home()
+        elif intent_name == "StartIngredIntent":
+            session["attributes"]["ingredientIndex"] = 0
+            return read_ingredient(session)
+        elif intent_name == "StartInstIntent":
+            session["attributes"]["directionIndex"] = 0
+            return read_direction(session)
         elif session["attributes"].get("readingIngredients", False):
-            if intent_name == "PrevIngredIntent":
+            if intent_name == "GeneralQueryIntent":
+                return ingredient_commands(session)
+            elif intent_name == "PrevIngredIntent":
                 session["attributes"]["ingredientIndex"] -= 1
             elif intent_name == "NextIngredIntent":
                 session["attributes"]["ingredientIndex"] += 1
             elif intent_name == "RestartIntent":
                 session["attributes"]["ingredientIndex"] = 0
-            return read_ingredient(intent, session)
+            return read_ingredient(session)
         elif session["attributes"].get("readingDirections", False):
-            if intent_name == "PrevInstIntent":
+            if intent_name == "GeneralQueryIntent":
+                return direction_commands(session)
+            elif intent_name == "PrevInstIntent":
                 session["attributes"]["directionIndex"] -= 1
             elif intent_name == "NextInstIntent":
                 session["attributes"]["directionIndex"] += 1
             elif intent_name == "RestartIntent":
                 session["attributes"]["directionIndex"] = 0
-            return read_direction(intent, session)
-        elif intent_name == "StartIngredIntent":
-            return read_ingredient(intent, session)
-        elif intent_name == "StartInstIntent":
-            return read_direction(intent, session)
+            return read_direction(session)
+        elif intent_name == "GeneralQueryIntent":
+            return recipe_commands(session)
 
     elif intent_name == "GeneralQueryIntent":
-        return general_query_message(intent, session)
+        return home_commands()
 
     elif intent_name == "FindIntent":
         return find_recipe(intent)
 
     elif intent_name == "HomeIntent":
-        return go_to_home(intent, session)
+        return go_to_home()
 
     else:
         raise ValueError("Invalid intent")
 
 
-def general_query_message(intent, session):
-    card_title = "Answer General Query"
+def home_commands():
+    card_title = "List of Commands"
     speech_output = (
-        "You are at the main menu. You can ask me to find any of "
-        "the recipes that you have added on the website. If I find the "
-        "recipe, you can ask me to read the ingredient list or to read the "
-        "recipe. If asked, I will read off each item one by one. After an "
-        "item is stated, you can move on to the next item, or, go back to the "
-        "previous item. You can restart the list at any time. You can exit "
-        "the ingredients, recipe list, or recipe itself and will be taken "
-        "back to the main menu."
+        "You can ask me to find any recipes that are on the website. When I "
+        'find the recipe, you can say "ingredients" or "recipe" to have me '
+        'read the list of ingredients or directions, one by one.'
     )
     return build_response(build_speechlet_response(speech_output, card_title))
+
+
+def recipe_commands(session):
+    session_attributes = session.get("attributes", {})
+    card_title = "Recipe Commands"
+    speech_output = ('You can say "ingredients" or "recipe" to have me '
+        'read the list of ingredients or directions, one by one.')
+    return build_response(build_speechlet_response(speech_output, card_title),
+        session_attributes)
+
+
+def ingredient_commands(session):
+    session_attributes = session.get("attributes", {})
+    card_title = "Ingredient List Commands"
+    speech_output = ('You can say "next ingredient", "last ingredient", '
+        '"start again" to restart the ingredients list, or "read recipe" '
+        'to move on to the recipe directions.')
+    return build_response(build_speechlet_response(speech_output, card_title),
+        session_attributes)
+
+
+def direction_commands(session):
+    session_attributes = session.get("attributes", {})
+    card_title = "Direction List Commands"
+    speech_output = ('You can say "next step", "last step", or '
+        '"start again" to restart the directions list.')
+    return build_response(build_speechlet_response(speech_output, card_title),
+        session_attributes)
 
 
 def find_recipe(intent):
@@ -102,7 +133,7 @@ def begin_recipe(recipe):
         session_attributes)
 
 
-def read_ingredient(intent, session):
+def read_ingredient(session):
     session_attributes = session.get("attributes", {})
     session_attributes["readingIngredients"] = True
     session_attributes["readingDirections"] = False
@@ -125,7 +156,7 @@ def read_ingredient(intent, session):
         session_attributes)
 
 
-def read_direction(intent, session):
+def read_direction(session):
     session_attributes = session.get("attributes", {})
     session_attributes["readingDirections"] = True
     session_attributes["readingIngredients"] = False
@@ -145,8 +176,8 @@ def read_direction(intent, session):
         session_attributes)
 
 
-def go_to_home(launch_request, session):
-    card_title = "Back to home"
+def go_to_home():
+    card_title = "Recipe Assistant Home"
     speech_output = "What recipe would you like to make?"
     return build_response(build_speechlet_response(speech_output, card_title))
 
