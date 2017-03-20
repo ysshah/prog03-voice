@@ -106,7 +106,7 @@ def direction_commands(session):
 
 def find_recipe(intent):
     recipes = json.loads(urllib2.urlopen("https://ffgh18ctp9.execute-api."
-        "us-east-1.amazonaws.com/prod/RecipeUpdate?TableName=Recipes").read())
+        "us-east-1.amazonaws.com/prod/RecipeUpdate?TableName=RecipesDB").read())
     query = intent["slots"]["SearchTerms"]["value"].lower()
     for recipe in recipes["Items"]:
         if recipe["RecipeName"].lower() == query:
@@ -124,8 +124,8 @@ def begin_recipe(recipe):
     session_attributes = {
         "inRecipe": True,
         "name": recipe["RecipeName"],
-        "ingredients": recipe["Ingredients"].split("\n"),
-        "directions": recipe["Directions"].split("\n"),
+        "ingredients": recipe["IngredientsList"].split("\n"),
+        "directions": recipe["PrepDirections"].split("\n"),
         "ingredientIndex": 0,
         "directionIndex": 0
     }
